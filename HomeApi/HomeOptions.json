@@ -1,0 +1,16 @@
+{
+  "HomeOptions": {
+    "FloorAmount": 2,
+    "Telephone": "+7 (999) 999-9999",
+    "Heating": "Gas",
+    "CurrentVolts": 220,
+    "GasConnected": true,
+    "Area": 120,
+    "Material": "Brick",
+    "Address": {
+      "Street": "Main Street",
+      "House": "42",
+      "Building": "A"
+    }
+  }
+}
