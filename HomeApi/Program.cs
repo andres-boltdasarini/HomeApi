@@ -1,3 +1,4 @@
+using System.Reflection;
 using HomeApi.Configuration;
 using Microsoft.OpenApi.Models;
 
@@ -17,6 +18,9 @@ builder.Services.Configure<HomeOptions>(opt =>
     // opt.FloorAmount = CalculateFloors();
     // opt.GasConnected = Environment.IsDevelopment();
 });
+
+
+builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(MappingProfile)));
 
 // Другие сервисы
 builder.Services.AddControllers();
