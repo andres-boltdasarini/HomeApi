@@ -1,4 +1,4 @@
-﻿namespace HomeApi.Contracts
+﻿namespace HomeApi.Contracts.Models.Home
 {
     public class InfoResponse
     {
