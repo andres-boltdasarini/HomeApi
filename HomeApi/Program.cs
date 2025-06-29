@@ -1,6 +1,9 @@
 using System.Reflection;
 using HomeApi.Configuration;
 using Microsoft.OpenApi.Models;
+using HomeApi.Contracts.Validation;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +22,7 @@ builder.Services.Configure<HomeOptions>(opt =>
     // opt.GasConnected = Environment.IsDevelopment();
 });
 
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(MappingProfile)));
 
