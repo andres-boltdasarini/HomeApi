@@ -22,7 +22,7 @@ builder.Services.Configure<HomeOptions>(opt =>
     // opt.GasConnected = Environment.IsDevelopment();
 });
 
-builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<AddDeviceRequestValidator>());
 
 builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(MappingProfile)));
 
