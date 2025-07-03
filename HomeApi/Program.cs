@@ -4,6 +4,7 @@ using Microsoft.OpenApi.Models;
 using HomeApi.Contracts.Validation;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using HomeApi;
 
 var builder = WebApplication.CreateBuilder(args);
 

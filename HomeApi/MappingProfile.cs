@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
+using HomeApi.Configuration;
 using HomeApi.Contracts.Models.Home;
 
-namespace HomeApi.Configuration
+namespace HomeApi
 {
     public class MappingProfile : Profile
     {
