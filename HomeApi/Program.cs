@@ -1,42 +1,67 @@
 using System.Reflection;
-using HomeApi.Configuration;
-using Microsoft.OpenApi.Models;
-using HomeApi.Contracts.Validation;
-using FluentValidation;
 using FluentValidation.AspNetCore;
 using HomeApi;
+using HomeApi.Configuration;
+using HomeApi.Contracts.Validation;
+using HomeApi.Data;
+using HomeApi.Data.Repos;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Добавляем кастомный конфиг-файл
-builder.Configuration.AddJsonFile("HomeOptions.json", optional: false, reloadOnChange: true);
+// Загрузка конфигурации
+builder.Configuration
+    .AddJsonFile("appsettings.json")
+    .AddJsonFile("appsettings.Development.json")
+    .AddJsonFile("HomeOptions.json");
 
-// Регистрируем конфигурацию
-builder.Services.Configure<HomeOptions>(builder.Configuration.GetSection("HomeOptions"));
-builder.Services.Configure<HomeOptions>(opt =>
-{
-    // Ручная перезапись конкретных значений
-    opt.Area = 120;
+// Добавление сервисов
+var services = builder.Services;
 
-    // Можно добавить дополнительную логику:
-    // opt.FloorAmount = CalculateFloors();
-    // opt.GasConnected = Environment.IsDevelopment();
-});
+// Подключаем автомаппинг
+var assembly = Assembly.GetAssembly(typeof(MappingProfile));
+services.AddAutoMapper(assembly);
 
-builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<AddDeviceRequestValidator>());
+// Регистрация репозиториев
+services.AddSingleton<IDeviceRepository, DeviceRepository>();
+services.AddSingleton<IRoomRepository, RoomRepository>();
 
-builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(MappingProfile)));
+// Настройка базы данных
+string connection = builder.Configuration.GetConnectionString("DefaultConnection");
+services.AddDbContext<HomeApiContext>(options => options.UseSqlServer(connection), ServiceLifetime.Singleton);
 
-// Другие сервисы
-builder.Services.AddControllers();
-builder.Services.AddSwaggerGen(c =>
+// Подключаем валидацию
+services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<AddDeviceRequestValidator>());
+
+// Конфигурация опций
+services.Configure<HomeOptions>(builder.Configuration);
+services.Configure<Address>(builder.Configuration.GetSection("Address"));
+
+// Добавляем контроллеры
+services.AddControllers();
+
+// Настройка Swagger
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "HomeApi", Version = "v1" });
 });
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+// Конфигурация pipeline
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "HomeApi v1"));
+}
+
+app.UseHttpsRedirection();
+app.UseRouting();
+app.UseAuthorization();
+
 app.MapControllers();
+
 app.Run();
