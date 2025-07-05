@@ -36,5 +36,20 @@ namespace HomeApi.Data.Repos
             
             await _context.SaveChangesAsync();
         }
+
+        public async Task UpdateRoom(Room room, string newName)
+        {
+            // Обновление свойств
+            room.Name = newName;
+            room.Area = room.Area;
+            room.GasConnected = room.GasConnected;
+            room.Voltage = room.Voltage;
+
+            var entry = _context.Entry(room);
+            if (entry.State == EntityState.Detached)
+                _context.Rooms.Update(room);
+
+            await _context.SaveChangesAsync();
+        }
     }
 }
