@@ -2,6 +2,7 @@
 using AutoMapper;
 using HomeApi.Contracts.Models.Rooms;
 using HomeApi.Data.Models;
+using HomeApi.Data.Queries;
 using HomeApi.Data.Repos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -46,29 +47,33 @@ namespace HomeApi.Controllers
         [HttpPut]
         [Route("{name}")]
         public async Task<IActionResult> UpdateRoom(
-    [FromRoute] string name,
-    [FromBody] EditRoomRequest request)
+            [FromRoute] string name,
+            [FromBody] EditRoomRequest request)
         {
             var room = await _repository.GetRoomByName(name);
             if (room == null)
                 return StatusCode(400, $"Комната {name} не найдена!");
 
             // Проверка конфликта имен
-            if (request.NewName != name)
+            if (!string.IsNullOrEmpty(request.NewName) && request.NewName != name)
             {
                 var existingRoom = await _repository.GetRoomByName(request.NewName);
                 if (existingRoom != null)
                     return StatusCode(409, $"Комната {request.NewName} уже существует!");
             }
 
-            // Обновление свойств
-            room.Name = request.NewName;
-            room.Area = request.Area;
-            room.GasConnected = request.GasConnected;
-            room.Voltage = request.Voltage;
+            // Создаем запрос для обновления
+            var query = new UpdateRoomQuery(
+                request.NewName,
+                request.NewArea,
+                request.NewGasConnected,
+                request.NewVoltage
+            );
 
-            await _repository.UpdateRoom(room, request.NewName);
-            return StatusCode(200, $"Комната {name} обновлена! Новое имя: {request.NewName}");
+            // Выполняем обновление
+            await _repository.UpdateRoom(room, query);
+
+            return StatusCode(200, $"Комната {name} обновлена!");
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using HomeApi.Data.Models;
+using HomeApi.Data.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeApi.Data.Repos
@@ -37,14 +38,22 @@ namespace HomeApi.Data.Repos
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateRoom(Room room, string newName)
+        public async Task UpdateRoom(Room room, UpdateRoomQuery query)
         {
-            // Обновление свойств
-            room.Name = newName;
-            room.Area = room.Area;
-            room.GasConnected = room.GasConnected;
-            room.Voltage = room.Voltage;
+            // Обновляем только переданные параметры
+            if (!string.IsNullOrEmpty(query.NewName))
+                room.Name = query.NewName;
 
+            if (query.NewArea.HasValue)
+                room.Area = query.NewArea.Value;
+
+            if (query.NewGasConnected.HasValue)
+                room.GasConnected = query.NewGasConnected.Value;
+
+            if (query.NewVoltage.HasValue)
+                room.Voltage = query.NewVoltage.Value;
+
+            // Обновляем сущность в базе данных
             var entry = _context.Entry(room);
             if (entry.State == EntityState.Detached)
                 _context.Rooms.Update(room);

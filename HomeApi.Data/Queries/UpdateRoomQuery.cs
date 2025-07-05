@@ -6,12 +6,20 @@
     public class UpdateRoomQuery
     {
         public string NewName { get; }
-        public string NewSerial{ get; }
+        public int? NewArea { get; }
+        public bool? NewGasConnected { get; }
+        public int? NewVoltage { get; }
 
-        public UpdateRoomQuery(string newName = null, string newSerial = null)
+        public UpdateRoomQuery(
+            string newName = null,
+            int? newArea = null,
+            bool? newGasConnected = null,
+            int? newVoltage = null)
         {
             NewName = newName;
-            NewSerial = newSerial;
+            NewArea = newArea;
+            NewGasConnected = newGasConnected;
+            NewVoltage = newVoltage;
         }
     }
 }
