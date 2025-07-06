@@ -40,7 +40,7 @@ namespace HomeApi.Data.Repos
 
         public async Task UpdateRoom(Room room, UpdateRoomQuery query)
         {
-            // Обновляем только переданные параметры
+
             if (!string.IsNullOrEmpty(query.NewName))
                 room.Name = query.NewName;
 
@@ -53,7 +53,7 @@ namespace HomeApi.Data.Repos
             if (query.NewVoltage.HasValue)
                 room.Voltage = query.NewVoltage.Value;
 
-            // Обновляем сущность в базе данных
+
             var entry = _context.Entry(room);
             if (entry.State == EntityState.Detached)
                 _context.Rooms.Update(room);

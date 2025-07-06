@@ -54,7 +54,6 @@ namespace HomeApi.Controllers
             if (room == null)
                 return StatusCode(400, $"Комната {name} не найдена!");
 
-            // Проверка конфликта имен
             if (!string.IsNullOrEmpty(request.NewName) && request.NewName != name)
             {
                 var existingRoom = await _repository.GetRoomByName(request.NewName);
@@ -62,7 +61,6 @@ namespace HomeApi.Controllers
                     return StatusCode(409, $"Комната {request.NewName} уже существует!");
             }
 
-            // Создаем запрос для обновления
             var query = new UpdateRoomQuery(
                 request.NewName,
                 request.NewArea,
@@ -70,7 +68,6 @@ namespace HomeApi.Controllers
                 request.NewVoltage
             );
 
-            // Выполняем обновление
             await _repository.UpdateRoom(room, query);
 
             return StatusCode(200, $"Комната {name} обновлена!");
