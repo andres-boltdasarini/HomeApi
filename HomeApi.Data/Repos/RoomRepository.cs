@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using HomeApi.Data.Models;
+using HomeApi.Data.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeApi.Data.Repos
@@ -34,6 +35,29 @@ namespace HomeApi.Data.Repos
             if (entry.State == EntityState.Detached)
                 await _context.Rooms.AddAsync(room);
             
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateRoom(Room room, UpdateRoomQuery query)
+        {
+
+            if (!string.IsNullOrEmpty(query.NewName))
+                room.Name = query.NewName;
+
+            if (query.NewArea.HasValue)
+                room.Area = query.NewArea.Value;
+
+            if (query.NewGasConnected.HasValue)
+                room.GasConnected = query.NewGasConnected.Value;
+
+            if (query.NewVoltage.HasValue)
+                room.Voltage = query.NewVoltage.Value;
+
+
+            var entry = _context.Entry(room);
+            if (entry.State == EntityState.Detached)
+                _context.Rooms.Update(room);
+
             await _context.SaveChangesAsync();
         }
     }
